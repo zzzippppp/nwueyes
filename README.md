@@ -77,8 +77,9 @@ createdb nwueyes
 
 # 按顺序执行（路径在 ruoyi/sql/）
 psql -d nwueyes -f ruoyi/sql/ry_20260417.sql
+psql -d nwueyes -f ruoyi/sql/migration/001_core_business.sql
 psql -d nwueyes -f ruoyi/sql/behavior_log.sql
-psql -d nwueyes -f ruoyi/sql/migration/002_storage_and_vectors.sql
+# 002 仅旧库升级需要，新装可跳过
 ```
 
 初始化后默认管理员：**`admin` / `admin123`**（登录后请修改密码）。
