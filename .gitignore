@@ -8,6 +8,8 @@ data/
 log_library/
 face_library/
 body_library/
+capture_manifest/
+profile_library/
 redis/
 *.local.yml
 .env
