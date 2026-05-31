@@ -1,0 +1,9 @@
+# 子项目各自独立 Git 仓库
+ruoyi/
+RuoYi-Vue3/
+
+# 本地数据与私密配置
+uploadPath/
+data/
+*.local.yml
+.env
