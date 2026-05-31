@@ -5,5 +5,11 @@ RuoYi-Vue3/
 # 本地数据与私密配置
 uploadPath/
 data/
+log_library/
+face_library/
+body_library/
+redis/
 *.local.yml
 .env
+yolov8n.pt
+.idea/
