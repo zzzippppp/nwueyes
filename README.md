@@ -1,92 +1,112 @@
-# nwueyes — 门口人员识别与停留管理
+# nwueyes — 门口人员识别与考勤
 
-基于 **若依 RuoYi-Vue3 + Spring Boot + PostgreSQL(pgvector) + Python(YOLO/InsightFace)** 的单门单摄像头 MVP：萤石拉流/录像回放 → 过线检测 → 抓拍入库 → 行为日志与停留会话。
-
-> 后端仓库：`ruoyi/` · 前端仓库：`RuoYi-Vue3/`（两个独立 Git 目录，clone 后放在同一父目录下即可）
+基于 **若依 RuoYi-Vue3 + Spring Boot + PostgreSQL(pgvector) + Python(YOLO/InsightFace)** 的单门识别 MVP：萤石拉流 / 局域网 RTSP → 过线检测 → 抓拍入库 → 行为日志与考勤会话。
 
 ---
 
-## 项目是干什么的
+## 仓库结构（三个独立 Git 仓库）
 
-| 能力 | 说明 |
-|------|------|
-| **实时监控** | 萤石公网 FLV / 局域网 RTSP，YOLOv8 + ByteTrack 检测人员 |
-| **过线判定** | 轨迹线段穿门槛线 + 方向（向下=进门，向上=出门） |
-| **行为日志** | 每次进/出门一条流水，含人脸/体态证据图（`log_library`） |
-| **停留会话** | 进门开 session；出门用 **exit 体态向量** 与 `enter_body_embedding` 比对，**≥ bodyMatchThreshold 才关 session** |
-| **进门抓拍** | 穿线后 **持续追脸**（`enterFaceHuntMaxSec`），检出后再择优；无脸可记 enter 但不建陌生人档案 |
-| **数据看板** | 停留记录、人员档案、陌生人研判、点位管理 |
-| **视频测试** | 上传 MP4 离线分析，可写入行为日志（不走真人反复进出） |
-
-### 数据流（简图）
-
-```
-摄像头/录像 → Python Worker(YOLO+过线) → HTTP Ingest → Java 入库
-                ↓ 抓拍 JPG              ↓              ├ behavior_logs
-                log_library/            向量匹配       └ presence_sessions + persons
-```
-
-### 存储目录（`storageRoot`，默认 `./data`）
-
-```
-data/
-├── uploadPath/              # 若依上传、测试视频
-├── log_library/face|body/   # 行为日志证据图（按日期）
-├── face_library/            # 人脸档案（匹配库）
-└── body_library/            # 体态档案
-```
-
----
-
-## 技术栈
-
-- **Java**：Spring Boot 3、MyBatis、JWT
-- **DB**：PostgreSQL 15+，扩展 `vector`（pgvector）
-- **缓存**：Redis
-- **前端**：Vue 3 + Element Plus + Vite
-- **Python 3.10/3.11**：ultralytics、OpenCV、InsightFace、torchreid
-
----
-
-## 从 GitHub 拿下来后怎么启动
-
-### 0. 目录结构
+clone 后放在**同一父目录**下：
 
 ```text
 your-workspace/
-├── ruoyi/           # 本仓库后端
-└── RuoYi-Vue3/      # 本仓库前端（与 ruoyi 同级）
+├── nwueyes/          # 本仓库：总览文档（可选 clone）
+├── ruoyi/            # 后端 → github.com/zzzippppp/nwueyes-ruoyi
+└── RuoYi-Vue3/       # 前端 → github.com/zzzippppp/nwueyes-vue3
 ```
 
-### 1. 环境准备
+| 仓库 | 推荐分支 | 说明 |
+|------|----------|------|
+| [nwueyes-ruoyi](https://github.com/zzzippppp/nwueyes-ruoyi) | **`local-ruoyi`** | Java + Python 脚本 + SQL |
+| [nwueyes-vue3](https://github.com/zzzippppp/nwueyes-vue3) | **`local-ruoyi-vue3`** | Vue3 管理端 |
+| [nwueyes](https://github.com/zzzippppp/nwueyes) | `master` | 总览 README、部署笔记 |
 
-| 依赖 | 版本建议 |
-|------|----------|
+```bash
+mkdir nwueyes-workspace && cd nwueyes-workspace
+
+git clone -b local-ruoyi https://github.com/zzzippppp/nwueyes-ruoyi.git ruoyi
+git clone -b local-ruoyi-vue3 https://github.com/zzzippppp/nwueyes-vue3.git RuoYi-Vue3
+git clone https://github.com/zzzippppp/nwueyes.git nwueyes   # 可选
+```
+
+> 根目录 `nwueyes/.gitignore` 会忽略 `ruoyi/`、`RuoYi-Vue3/`，避免嵌套仓库冲突；**实际开发在子目录各自的 Git 里提交**。
+
+---
+
+## 功能概览
+
+| 模块 | 菜单路径 | 说明 |
+|------|----------|------|
+| 监控大屏 | 设备管理 → 监控大屏 | 萤石预览 + **开始识别**（YOLO 过线） |
+| 考勤日志 | 考勤管理 → 考勤日志 | 每次进/出门流水与证据图 |
+| 考勤信息 | 考勤管理 → 考勤信息 | 人员在场 / 日考勤统计 |
+| 陌生人研判 | 考勤管理 → 陌生人研判 | 陌生人转熟人、合并档案 |
+| 设备信息 | 设备管理 → 设备信息 | 摄像头名称、序列号、门线 ROI |
+| 视频检测 | 设备管理 → 视频检测 | 上传 MP4 离线分析并入库 |
+
+数据流：
+
+```
+摄像头/录像 → Python Worker(YOLO+过线) → POST /ingest/presence/event → Java 入库
+                ↓ 抓拍 JPG                         ├ behavior_logs
+                log_library/                       └ presence_sessions + persons
+```
+
+---
+
+## 环境要求
+
+| 依赖 | 版本 |
+|------|------|
 | JDK | 17+ |
 | Maven | 3.8+ |
 | Node.js | 18+ |
-| PostgreSQL | 15+（需能安装 `vector` 扩展） |
+| PostgreSQL | 15+（需 **pgvector** 扩展） |
 | Redis | 6+ |
 | Python | 3.10 或 3.11 |
 
-### 2. 初始化数据库
+---
+
+## 一、初始化数据库
+
+### 方式 A：一键全量（推荐，空库）
 
 ```bash
-# 创建库
 createdb nwueyes
+psql -U postgres -d nwueyes -f ruoyi/sql/nwueyes_full_install.sql
+```
 
-# 按顺序执行（路径在 ruoyi/sql/）
+含若依基础表 + 业务表 + 默认菜单 + 默认摄像头 `id=1`。
+
+### 方式 B：分步 migration
+
+见 [`ruoyi/sql/migration/README.md`](ruoyi/sql/migration/README.md)。新装核心顺序：
+
+```bash
 psql -d nwueyes -f ruoyi/sql/ry_20260417.sql
 psql -d nwueyes -f ruoyi/sql/migration/001_core_business.sql
 psql -d nwueyes -f ruoyi/sql/behavior_log.sql
-# 002 仅旧库升级需要，新装可跳过
+psql -d nwueyes -f ruoyi/sql/migration/003_fk_on_delete_set_null.sql
+psql -d nwueyes -f ruoyi/sql/migration/004_video_clips_and_ai_analysis.sql
+psql -d nwueyes -f ruoyi/sql/migration/005_attendance_extend.sql
+psql -d nwueyes -f ruoyi/sql/migration/006_behavior_analysis.sql
+psql -d nwueyes -f ruoyi/sql/migration/007_behavior_logs_restore_image_columns.sql
+psql -d nwueyes -f ruoyi/sql/migration/008_platform_roster_user.sql
+psql -d nwueyes -f ruoyi/sql/migration/008_menu_restructure.sql
+psql -d nwueyes -f ruoyi/sql/migration/010_persons_cleanup_merge.sql
+psql -d nwueyes -f ruoyi/sql/migration/011_drop_enter_face_embedding.sql
+psql -d nwueyes -f ruoyi/sql/migration/012_show_video_test_menu.sql
 ```
 
-初始化后默认管理员：**`admin` / `admin123`**（登录后请修改密码）。
+默认管理员：**`admin` / `admin123`**（登录后请修改）。
 
-需在 `locations` 表配置至少一个监控点位（id=1），可在「数据看板 → 监控信息」维护，或自行 INSERT。
+安装后修改 **`camera` 表** `id=1` 的 `serial_no` 为你的萤石设备序列号（或在「设备信息」页编辑）。
 
-### 3. Python 虚拟环境（必做，venv 不随仓库分发）
+---
+
+## 二、Python 环境
+
+venv **不随仓库分发**，每台机器单独创建：
 
 ```bash
 cd ruoyi/scripts
@@ -94,7 +114,7 @@ python -m venv .venv
 
 # Windows
 .venv\Scripts\activate
-# Linux/macOS
+# Linux / macOS
 source .venv/bin/activate
 
 pip install -U pip
@@ -102,145 +122,148 @@ pip install -r requirements.txt
 pip install -r requirements-embedding.txt
 ```
 
-首次运行 YOLO / InsightFace 会自动下载模型（`yolov8n.pt`、`~/.insightface/models/`），需联网。
+### 模型权重
+
+| 模型 | 位置 | 说明 |
+|------|------|------|
+| `osnet_x0_25_imagenet.pth` | `ruoyi/scripts/models/` | **已随仓库提交**，体态 ReID |
+| `yolov8n.pt` | 工作目录或 ultralytics 缓存 | **未提交**，首次跑 YOLO 自动下载 |
+| InsightFace `buffalo_l` | `~/.insightface/models/` | 首次 embed 自动下载 |
+
+详见 [`ruoyi/scripts/models/README.md`](ruoyi/scripts/models/README.md)。
 
 自检：
 
 ```bash
+cd ruoyi
 python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
-python embed_features.py --kind face --image /path/to/any/face.jpg
+python scripts/embed_features.py --kind face --image log_library/_probe_raw.jpg
 ```
 
-### 4. 后端配置（不要提交私密文件）
+---
+
+## 三、后端配置
 
 ```bash
 cd ruoyi/ruoyi-admin/src/main/resources
-cp application-local.example.yml application-local.yml   # Windows 用 copy
+copy application-local.example.yml application-local.yml   # Windows
+# cp application-local.example.yml application-local.yml  # Linux/macOS
 ```
 
-编辑 `application-local.yml`，至少填写：
+**必须填写**（示例见 `application-local.example.yml`）：
 
-- `ezviz.appKey` / `appSecret`（[萤石开放平台](https://open.ys7.com)）
-- `presence.ingest.apiKey`（自定义，与 Python worker 一致）
-- `presence.ingest.replayPythonCommand` → 指向 **上一步 venv 的 python**
-- `ruoyi.profile`、`storageRoot` → 本机可写目录（如 `./data`）
-- `replayLineY` / `replayRoi` → 门区标定（1920×1080 参考）
+| 配置项 | 说明 |
+|--------|------|
+| `ezviz.appKey` / `appSecret` | [萤石开放平台](https://open.ys7.com) |
+| `presence.ingest.apiKey` | 与 Python ingest 请求头一致 |
+| `presence.ingest.replayPythonCommand` | 指向 venv 的 `python.exe` 绝对路径 |
+| `ruoyi.profile` | 若依上传目录，如 `./data/uploadPath` |
+| `presence.ingest.storageRoot` | 抓拍根目录，如 `./data` |
+| `replayLineY` / `replayRoi` | 门线/ROI（1920×1080 参考，运行时自动缩放） |
+| `live.lanRtspUrl` | 可选，局域网 RTSP 主码流（识别推荐） |
 
-> **`application-local.yml` 已在 `.gitignore` 中，只存在于本机，不会影响其他开发者。**
+**直播识别内存**：`presence.ingest.clip.enabled: false`（默认已关，主码流全帧缓存易 OOM）。
 
-数据库连接默认 `localhost:5432/nwueyes`（见 `application-druid.yml`），可通过环境变量覆盖：
+> `application-local.yml` 已在 `.gitignore`，**切勿提交**。
+
+数据库连接默认 `localhost:5432/nwueyes`（`application-druid.yml`），可用环境变量覆盖：
 
 ```bash
-export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nwueyes
-export SPRING_DATASOURCE_USERNAME=postgres
-export SPRING_DATASOURCE_PASSWORD=你的密码
+set SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nwueyes
+set SPRING_DATASOURCE_USERNAME=postgres
+set SPRING_DATASOURCE_PASSWORD=你的密码
 ```
 
-完整变量清单见 `ruoyi/.env.example`。
+---
 
-### 5. 启动 Redis
+## 四、启动顺序
 
 ```bash
+# 1. Redis
 redis-server
-```
 
-### 6. 启动后端
-
-```bash
+# 2. 后端
 cd ruoyi
 mvn clean package -DskipTests
 java -jar ruoyi-admin/target/ruoyi-admin.jar
-# 或在 IDE 中运行 RuoYiApplication
-```
+# 或 IDE 运行 ruoyi-admin/.../RuoYiApplication.java
+# 默认 http://localhost:8080
 
-默认端口：**8080**
-
-### 7. 启动前端
-
-```bash
+# 3. 前端
 cd RuoYi-Vue3
 npm install
 npm run dev
+# 默认 http://localhost:80 ，/dev-api 代理到 8080
 ```
-
-浏览器访问控制台输出的地址（默认 **http://localhost:80**），使用 `admin/admin123` 登录。
-
-开发模式下 `/dev-api` 会代理到 `http://localhost:8080`。
-
-### 8. 开始识别（拉流）
-
-1. 菜单进入 **监控大屏**，选择设备
-2. 拉流模式选 **局域网 RTSP**（识别用，画质高）；预览仍可走萤石云 FLV
-3. 点击 **开始识别**（可只开识别不预览）
-4. 日志中应出现 `size=2880x1620`（RTSP）、`[cross] confirmed`、`[capture-hunt]`、`async ingest ok`
-5. **行为日志**页选当天日期并 **刷新**（不自动刷）
-6. **数据看板** 查看停留记录 / 人员档案
-
-门线标定：Worker 启动时会写 `log_library/_probe.jpg`（带 ROI/过线），对照后改 `replayLineY` / `replayRoi`。
 
 ---
 
-## 服务器部署要点
+## 五、验证识别链路
 
-1. **数据盘**：将 `NWUEYES_DATA_DIR` / `PRESENCE_STORAGE_ROOT` 指到持久化目录（如 `/data/nwueyes`）
-2. **Python**：在服务器上单独建 venv，**不要**从 Windows 拷贝 venv
-3. **Nginx**：前端 `npm run build:prod` 后托管 `dist/`；`/prod-api` 反代 Java 8080
-4. **安全**：修改 `TOKEN_SECRET`、数据库密码、ingest `apiKey`；生产关闭 Swagger
-5. **萤石**：设备编码 H.264；公网 FLV 首帧可能较慢，可配置 `lanRtspUrl`
+1. 登录 → **设备管理 → 监控大屏**
+2. 刷新配置，选择设备，填写验证码（加密设备）
+3. 拉流选 **局域网 RTSP**（同网推荐）或公网云转发
+4. 点击 **开始识别**（与预览独立；离开页面后识别仍全局运行，直到点「停止识别」）
+5. 状态变为 **识别中** 后，过人触发进/出门
+6. **考勤管理 → 考勤日志** 选当天日期并 **刷新**
+
+Worker 启动会写 `storageRoot/log_library/_probe.jpg`（ROI + 过线），用于标定 `replayLineY` / `replayRoi`。
 
 ---
 
-## 业务规则摘要
+## 六、存储目录
 
-| 场景 | 行为 |
-|------|------|
-| 进门 | 轨迹 **穿门槛线** 触发；**只认人脸**匹配/建陌生人；进门 session 写入 `enter_body_embedding`（有 body 图且 embed 成功时） |
-| 进门抓拍 | 穿线后 **追脸窗口**（默认最长 10s + 1.5s 择优），非固定 2.5s 即入库 |
-| 重复进门（同 track / 同人人脸已有 open session） | 写行为日志，不新建 session |
-| 出门 | **exit 体态向量** vs 各 open session 的 `enter_body_embedding`，**相似度 ≥ bodyMatchThreshold（默认 0.50）** 才关 session；**不用 trackKey 兜底** |
-| 出门未过阈值 / 无 body 向量 | 写 exit 行为日志（orphan），**不关 session** |
-| 多人先后进门 | 不再因「已有人在场」静默第二人；仍防 **门内深处首检换 ID** 假进门 |
-| 陌生人研判转熟人 | **合并已有档案**，不新建空人员 |
+`storageRoot` 下（默认 `./data` 或项目根，以 yml 为准）：
 
-关键配置（`application-local.yml` → `presence.ingest.live`）：
-
-```yaml
-enterFaceHuntMaxSec: 10    # 进门追脸最长等待
-enterFaceGraceSec: 1.5     # 首次检出脸后继续择优
-bodyMatchThreshold: 0.50   # 出门体态匹配阈值
-lanRtspUrl: rtsp://...     # 局域网识别主码流（推荐）
+```text
+uploadPath/                 # 若依上传、测试视频
+log_library/face|body/      # 行为日志证据图（按日期）
+face_library/               # 人脸匹配库
+body_library/               # 体态匹配库
 ```
+
+均在 `.gitignore`，不提交。
+
+---
+
+## 七、给 AI / 自动化助手的检查清单
+
+1. 三个仓库是否同级 clone？分支是否为 `local-ruoyi` / `local-ruoyi-vue3`？
+2. PostgreSQL 是否已装 pgvector？库名 `nwueyes`？
+3. `application-local.yml` 是否存在且 `replayPythonCommand` 指向有效 Python？
+4. Redis 是否运行？8080 / 80 端口是否占用？
+5. 萤石 appKey 是否有效？摄像头 H.264？RTSP 是否已在 App 开启？
+6. 识别失败时查：`live/status` 的 `logTail`、`[fatal]` 行；常见 OOM → 保持 `clip.enabled: false`、降低码率或使用子码流。
 
 ---
 
 ## 常见问题
 
-**Q: clone 后没有 `application-local.yml`？**  
-A: 正常。从 `application-local.example.yml` 复制一份。
+**Q: 识别进程 exitCode=1 / 内存不足？**  
+A: 关闭 `clip.enabled`；降低 `targetDetectFps` / `yoloImgsz`；或摄像头改用子码流/1080p。
 
-**Q: 识别无日志？**  
-A: 查 Worker `[cross] confirmed`、Java `async ingest`；多人场景看是否 `[gate] silent-inside`；确认选 RTSP 且 `ingest.apiKey` 一致。
+**Q: RTSP 401 / 超时？**  
+A: 填验证码；确认服务器与摄像头同网；萤石 App 开启 RTSP。
 
-**Q: 出了门还在「在场中」？**  
-A: 出门需 **exit 体态向量** 与进门 session 的 `enter_body_embedding` 过阈值；track 换了 id 也能关，但 **进门须有 body 向量**。查 `presence_sessions.enter_body_embedding IS NOT NULL`。
+**Q: 行为日志无记录？**  
+A: 须点 **开始识别** 而非仅预览；确认 Python 进程在跑且 `ingest.apiKey` 一致。
 
-**Q: 抓拍图很糊？**  
-A: 拉流可能是 2K，但入库是 **YOLO 人框裁剪**，远景人只占几十像素就会糊；尽量让人在门区占画面更大。
+**Q: `clip` 是什么？要不要开？**  
+A: 直播时按轨迹/场景切 **视频片段** 入库（`presence_video_clips`），供回放与 AI 分析；**不影响**过线检测、抓拍与考勤（主链路走 `/ingest/presence/event`）。默认 `clip.enabled: false`，避免主码流全帧环形缓冲占内存导致 exitCode=1。
 
-**Q: `yolov8n.pt` 在哪？**  
-A: 不提交 Git，首次跑 YOLO 自动下载。
-
-**Q: 两个 Git 仓库怎么开源？**  
-A: 可建两个 GitHub repo，或合并为 monorepo；README 保持同级目录结构说明即可。
+**Q: 出了门仍「在场中」？**  
+A: 出门需 exit 体态向量与 `enter_body_embedding` 相似度 ≥ `bodyMatchThreshold`（默认 0.50）。
 
 ---
 
-## 基于若依
+## 延伸阅读
 
-后端基于 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue) 二次开发，遵循原项目 MIT 协议。业务扩展：行为日志、停留会话、萤石拉流、Python 识别流水线等。
+- 后端详情：[`ruoyi/NWUEYES_README.md`](ruoyi/NWUEYES_README.md)
+- SQL migration：[`ruoyi/sql/migration/README.md`](ruoyi/sql/migration/README.md)
+- 部署笔记：[`deployment-progress.md`](deployment-progress.md)、[`middleware-deployment.md`](middleware-deployment.md)
 
 ---
 
 ## License
 
-MIT（与 RuoYi 一致）；YOLO、InsightFace 等第三方模型请遵循各自许可证。
+MIT（与 RuoYi 一致）；YOLO、InsightFace 等模型遵循各自许可证。
