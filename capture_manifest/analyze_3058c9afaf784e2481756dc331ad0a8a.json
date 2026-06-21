@@ -1,0 +1,85 @@
+{
+  "taskId": "analyze_3058c9afaf784e2481756dc331ad0a8a",
+  "tracks": [
+    {
+      "trackId": 1,
+      "trackKey": "yolo_1",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_1.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_1.jpg",
+      "faceScore": 0.766,
+      "bodyScore": 0.855,
+      "sampledFrames": 56,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 2,
+      "trackKey": "yolo_2",
+      "faceImageUrl": "",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_2.jpg",
+      "faceScore": null,
+      "bodyScore": 0.691,
+      "sampledFrames": 72,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 7,
+      "trackKey": "yolo_7",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_7.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_7.jpg",
+      "faceScore": 0.727,
+      "bodyScore": 0.641,
+      "sampledFrames": 41,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 16,
+      "trackKey": "yolo_16",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_16.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_16.jpg",
+      "faceScore": 0.741,
+      "bodyScore": 0.759,
+      "sampledFrames": 37,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 17,
+      "trackKey": "yolo_17",
+      "faceImageUrl": "",
+      "bodyImageUrl": "",
+      "faceScore": null,
+      "bodyScore": null,
+      "sampledFrames": 1,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 18,
+      "trackKey": "yolo_18",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_18.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_18.jpg",
+      "faceScore": 0.763,
+      "bodyScore": 0.829,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 19,
+      "trackKey": "yolo_19",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_19.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_19.jpg",
+      "faceScore": 0.75,
+      "bodyScore": 0.802,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 20,
+      "trackKey": "yolo_20",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_20.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3058c9afaf784e2481756dc331ad0a8a_yolo_20.jpg",
+      "faceScore": 0.599,
+      "bodyScore": 0.607,
+      "sampledFrames": 2,
+      "windowSec": 2.5
+    }
+  ]
+}

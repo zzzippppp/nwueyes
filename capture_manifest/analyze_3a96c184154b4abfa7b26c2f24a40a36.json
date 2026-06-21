@@ -1,0 +1,35 @@
+{
+  "taskId": "analyze_3a96c184154b4abfa7b26c2f24a40a36",
+  "tracks": [
+    {
+      "trackId": 1,
+      "trackKey": "yolo_1",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_1.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_1.jpg",
+      "faceScore": 0.751,
+      "bodyScore": 0.85,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 2,
+      "trackKey": "yolo_2",
+      "faceImageUrl": "",
+      "bodyImageUrl": "",
+      "faceScore": null,
+      "bodyScore": null,
+      "sampledFrames": 2,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 3,
+      "trackKey": "yolo_3",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_3.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_3.jpg",
+      "faceScore": 0.772,
+      "bodyScore": 0.855,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    }
+  ]
+}

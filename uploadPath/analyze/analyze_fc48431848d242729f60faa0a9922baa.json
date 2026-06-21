@@ -1,0 +1,158 @@
+{
+  "algorithm": "YOLOv8 + ByteTrack",
+  "model": "yolov8n.pt",
+  "sourceVideo": "E:\\nwueyes\\uploadPath\\upload\\2026\\06\\21\\屏幕录制 2026-06-21 175502_20260621193946A001.mp4",
+  "totalFrames": 1091,
+  "fps": 30.0,
+  "width": 1378,
+  "height": 774,
+  "refWidth": 1920,
+  "refHeight": 1080,
+  "lineY": 684,
+  "roi": "526,223,863,735",
+  "roiBase": "733,311,1202,904",
+  "lineYBase": 955,
+  "tightInferPx": 32,
+  "exitMarginPx": 20,
+  "minTrackHits": 6,
+  "uniqueTracks": 8,
+  "maxPersonsInRoi": 3,
+  "enterCount": 2,
+  "exitCount": 2,
+  "events": [
+    {
+      "frame": 413,
+      "timeSec": 13.77,
+      "trackId": 1,
+      "trackKey": "yolo_1",
+      "eventType": "exit",
+      "confidence": 0.78,
+      "inferred": false,
+      "faceImageUrl": "",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_1_exit_1782042025519_body.jpg",
+      "snapshotUrl": "/dashboard/storage/file/snapshot/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_1_exit_1782042025519_snap.jpg",
+      "qualityFlag": "normal",
+      "captureSamples": 23
+    },
+    {
+      "frame": 487,
+      "timeSec": 16.23,
+      "trackId": 2,
+      "trackKey": "yolo_2",
+      "eventType": "exit",
+      "confidence": 0.829,
+      "inferred": false,
+      "faceImageUrl": "",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_2_exit_1782042049729_body.jpg",
+      "snapshotUrl": "/dashboard/storage/file/snapshot/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_2_exit_1782042049729_snap.jpg",
+      "qualityFlag": "normal",
+      "captureSamples": 23
+    },
+    {
+      "frame": 761,
+      "timeSec": 25.37,
+      "trackId": 18,
+      "trackKey": "yolo_18",
+      "eventType": "enter",
+      "confidence": 0.855,
+      "inferred": false,
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_18_enter_1782042103746_face.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_18_enter_1782042103746_body.jpg",
+      "snapshotUrl": "/dashboard/storage/file/snapshot/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_18_enter_1782042103746_snap.jpg",
+      "qualityFlag": "normal",
+      "captureSamples": 46
+    },
+    {
+      "frame": 905,
+      "timeSec": 30.17,
+      "trackId": 19,
+      "trackKey": "yolo_19",
+      "eventType": "enter",
+      "confidence": 0.605,
+      "inferred": false,
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_19_enter_1782042156046_face.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_19_enter_1782042156046_body.jpg",
+      "snapshotUrl": "/dashboard/storage/file/snapshot/2026/06/21/analyze_analyze_fc48431848d242729f60faa0a9922baa_yolo_19_enter_1782042156046_snap.jpg",
+      "qualityFlag": "normal",
+      "captureSamples": 46
+    }
+  ],
+  "tracks": [
+    {
+      "trackId": 1,
+      "firstFrame": 380,
+      "lastFrame": 435,
+      "firstTimeSec": 12.67,
+      "lastTimeSec": 14.5,
+      "avgConfidence": 0.751,
+      "hitFrames": 56
+    },
+    {
+      "trackId": 2,
+      "firstFrame": 375,
+      "lastFrame": 509,
+      "firstTimeSec": 12.5,
+      "lastTimeSec": 16.97,
+      "avgConfidence": 0.803,
+      "hitFrames": 131
+    },
+    {
+      "trackId": 7,
+      "firstFrame": 437,
+      "lastFrame": 485,
+      "firstTimeSec": 14.57,
+      "lastTimeSec": 16.17,
+      "avgConfidence": 0.335,
+      "hitFrames": 41
+    },
+    {
+      "trackId": 16,
+      "firstFrame": 492,
+      "lastFrame": 528,
+      "firstTimeSec": 16.4,
+      "lastTimeSec": 17.6,
+      "avgConfidence": 0.672,
+      "hitFrames": 37
+    },
+    {
+      "trackId": 17,
+      "firstFrame": 503,
+      "lastFrame": 503,
+      "firstTimeSec": 16.77,
+      "lastTimeSec": 16.77,
+      "avgConfidence": 0.315,
+      "hitFrames": 1
+    },
+    {
+      "trackId": 18,
+      "firstFrame": 735,
+      "lastFrame": 837,
+      "firstTimeSec": 24.5,
+      "lastTimeSec": 27.9,
+      "avgConfidence": 0.851,
+      "hitFrames": 103
+    },
+    {
+      "trackId": 19,
+      "firstFrame": 887,
+      "lastFrame": 1001,
+      "firstTimeSec": 29.57,
+      "lastTimeSec": 33.37,
+      "avgConfidence": 0.796,
+      "hitFrames": 115
+    },
+    {
+      "trackId": 20,
+      "firstFrame": 903,
+      "lastFrame": 904,
+      "firstTimeSec": 30.1,
+      "lastTimeSec": 30.13,
+      "avgConfidence": 0.353,
+      "hitFrames": 2
+    }
+  ],
+  "captureMode": "event",
+  "captureEventCount": 4,
+  "debugVideoPath": "E:/nwueyes/uploadPath/analyze/analyze_fc48431848d242729f60faa0a9922baa.mp4",
+  "debugVideoUrl": "/profile/analyze/analyze_fc48431848d242729f60faa0a9922baa.mp4"
+}

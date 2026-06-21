@@ -1,0 +1,95 @@
+{
+  "algorithm": "YOLOv8 + ByteTrack",
+  "model": "yolov8n.pt",
+  "sourceVideo": "E:\\nwueyes\\uploadPath\\upload\\2026\\06\\21\\屏幕录制 2026-06-21 170314_20260621170529A001.mp4",
+  "totalFrames": 1762,
+  "fps": 30.0,
+  "width": 1378,
+  "height": 770,
+  "refWidth": 1920,
+  "refHeight": 1080,
+  "lineY": 614,
+  "roi": "503,136,938,731",
+  "roiBase": "701,191,1307,861",
+  "lineYBase": 861,
+  "tightInferPx": 32,
+  "exitMarginPx": 20,
+  "minTrackHits": 6,
+  "uniqueTracks": 3,
+  "maxPersonsInRoi": 1,
+  "enterCount": 0,
+  "exitCount": 1,
+  "events": [
+    {
+      "frame": 409,
+      "timeSec": 13.63,
+      "trackId": 1,
+      "eventType": "exit",
+      "confidence": 0.623,
+      "inferred": false
+    }
+  ],
+  "tracks": [
+    {
+      "trackId": 1,
+      "firstFrame": 336,
+      "lastFrame": 415,
+      "firstTimeSec": 11.2,
+      "lastTimeSec": 13.83,
+      "avgConfidence": 0.816,
+      "hitFrames": 80
+    },
+    {
+      "trackId": 2,
+      "firstFrame": 420,
+      "lastFrame": 421,
+      "firstTimeSec": 14.0,
+      "lastTimeSec": 14.03,
+      "avgConfidence": 0.312,
+      "hitFrames": 2
+    },
+    {
+      "trackId": 3,
+      "firstFrame": 1268,
+      "lastFrame": 1400,
+      "firstTimeSec": 42.27,
+      "lastTimeSec": 46.67,
+      "avgConfidence": 0.856,
+      "hitFrames": 133
+    }
+  ],
+  "captureTracks": [
+    {
+      "trackId": 1,
+      "trackKey": "yolo_1",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_1.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_1.jpg",
+      "faceScore": 0.751,
+      "bodyScore": 0.85,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 2,
+      "trackKey": "yolo_2",
+      "faceImageUrl": "",
+      "bodyImageUrl": "",
+      "faceScore": null,
+      "bodyScore": null,
+      "sampledFrames": 2,
+      "windowSec": 2.5
+    },
+    {
+      "trackId": 3,
+      "trackKey": "yolo_3",
+      "faceImageUrl": "/dashboard/storage/file/log/face/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_3.jpg",
+      "bodyImageUrl": "/dashboard/storage/file/log/body/2026/06/21/analyze_analyze_3a96c184154b4abfa7b26c2f24a40a36_yolo_3.jpg",
+      "faceScore": 0.772,
+      "bodyScore": 0.855,
+      "sampledFrames": 76,
+      "windowSec": 2.5
+    }
+  ],
+  "debugVideoPath": "E:/nwueyes/uploadPath/analyze/analyze_3a96c184154b4abfa7b26c2f24a40a36.mp4",
+  "debugVideoUrl": "/profile/analyze/analyze_3a96c184154b4abfa7b26c2f24a40a36.mp4"
+}

@@ -216,13 +216,21 @@ Worker 启动会写 `storageRoot/log_library/_probe.jpg`（ROI + 过线），用
 `storageRoot` 下（默认 `./data` 或项目根，以 yml 为准）：
 
 ```text
-uploadPath/                 # 若依上传、测试视频
+uploadPath/                 # 若依上传、测试视频（根仓库含演示 MP4）
 log_library/face|body/      # 行为日志证据图（按日期）
 face_library/               # 人脸匹配库
 body_library/               # 体态匹配库
+snapshot_library/           # 整帧截屏
+capture_manifest/           # 视频分析 manifest
 ```
 
-均在 `.gitignore`，不提交。
+**演示数据**：上述目录在 **nwueyes 根仓库** 已提交一份本地快照；日常识别产生的新文件仍在 `.gitignore` 中，请勿 push。
+
+导入对应数据库行：
+
+```bash
+psql -U postgres -d nwueyes -f ruoyi/sql/seed_local_snapshot.sql
+```
 
 ---
 
