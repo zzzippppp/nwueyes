@@ -16,7 +16,7 @@
 
 | 类别 | 状态 | 说明 |
 |------|------|------|
-| **① 官方 Demo 运行验证** | **已完成（本机已验证）** | 使用官方 `tools/demo_track.py`，输入 `videos/palace.mp4`，可加载权重并生成可解码跟踪视频与非空轨迹 TXT。 |
+| **① 官方 Demo 运行验证** | **已完成（本机 + cleanroom 已验证）** | 使用官方 `tools/demo_track.py`，输入 `videos/palace.mp4`，可加载权重并生成可解码跟踪视频与非空轨迹 TXT。cleanroom 见下文 **方案 B**（2026-10-11，`pip check` 无冲突）。 |
 | **② MOT17 / MOT20 等论文指标（MOTA、IDF1 等）** | **尚未完成** | 未在完整 MOT 数据集上按论文流程训练/评测；**Demo 成功不等于论文指标复现**。 |
 | **③ 考勤业务是否调用本独立实现** | **尚未验证** | 业务侧可能通过 Ultralytics 等路径使用跟踪配置；**与子模块内 ByteTrack 源码无已确认的 import/部署耦合**。 |
 
@@ -85,57 +85,56 @@ git checkout d1bf0191adff59bc8fcfeaa0b33d3d1642552a99
 
 ---
 
-## 依赖安装：官方要求 vs 本机 Demo
+## 依赖安装：方案 B（推荐，仅 Demo）与方案 A（官方全量）
 
-### 官方 README（提交 `d1bf019`，Installing on the host machine）
+官方 README（提交 `d1bf019`）：<https://github.com/ifzhang/ByteTrack/blob/d1bf019/README.md#installation>
 
-<https://github.com/ifzhang/ByteTrack/blob/d1bf019/README.md#installation>
+| 方案 | 适用 | 说明 |
+|------|------|------|
+| **B（推荐）** | 只跑 `demo_track.py` 视频/图像 Demo | 不装完整 `requirements.txt`（含 ONNX/训练等）；依赖更少；**已在独立 cleanroom clone 上端到端验证**（2026-10-11）。 |
+| **A** | 训练、评测、ONNX 导出等 | 与上游 Step 1～3 一致；Windows + Py3.10 下 **全量 `requirements.txt` 是否可装齐，本组织未验证**。 |
 
-**Step 1 — Install ByteTrack**（在 **`external\ByteTrack` 子模块根目录**）：
+**为何方案 B 仍要装 pycocotools：** 加载 Demo 所用 exp（如 `yolox_x_mix_det.py`）时会 `import yolox.data`，进而导入 `pycocotools`，与是否训练无关。
+
+**NumPy 1.23.5：** YOLOX/ByteTrack 跟踪代码仍使用 `np.float` 等，须 **NumPy 1.x（低于 2.0）**；本组织固定 **1.23.5**。安装 OpenCV 时请避免被解析到 **opencv-python 5.x**（要求 NumPy ≥ 2）；方案 B 实测为 **opencv-python 4.11.x**。
+
+### 方案 B 已验证版本（cleanroom，`pip check` 通过）
+
+| 组件 | 版本 |
+|------|------|
+| Python | 3.10.20 |
+| torch / torchvision | 2.6.0+cu124 / 0.21.0+cu124 |
+| numpy | 1.23.5 |
+| opencv-python | 4.11.0.86 |
+| pycocotools | 2.0.11（PyPI wheel，**非** git cocoapi 源码） |
+| 其它 Demo 包 | loguru, tabulate, thop, lap, cython, scipy, cython_bbox |
+| yolox | 0.1.0（`python setup.py develop`） |
+| GPU | NVIDIA RTX 4060，`torch.cuda.is_available()` 为 True |
+
+### 方案 A — 官方 Step 1～3（子模块根目录）
 
 ```shell
 pip3 install -r requirements.txt
 python3 setup.py develop
-```
-
-**Step 2 — pycocotools**：
-
-```shell
-pip3 install cython; pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
-```
-
-**Step 3 — Others**：
-
-```shell
+pip3 install cython
+pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 pip3 install cython_bbox
 ```
 
-官方 **未指定** Python 小版本、PyTorch 渠道与 NumPy pin。`requirements.txt` 末尾 ONNX 相关 pin **是否在 Windows + Python 3.10 下可全部安装，本机未验证**。
+若走方案 A 且 NumPy 被拉高，Demo 前可再执行 `pip install numpy==1.23.5`；全量环境可能出现 **`pip check` 与 NumPy 1.23.5 冲突**（例如 opencv-python 5.x、scikit-image），见下文历史记录。
 
-### 本机 Demo 结束时实际存在的版本（已跑通 Demo）
-
-| 组件 | 本机已测版本 |
-|------|--------------|
-| Python | 3.10.20 |
-| PyTorch | 2.6.0+cu124 |
-| torchvision | 0.21.0+cu124 |
-| NumPy | 1.23.5 |
-| GPU | NVIDIA RTX 4060 |
-
-**不是**「从零按文档一键安装且无 `pip check` 告警」的已验证结论。NumPy 1.23.5 为本机 workaround（YOLOX 与 NumPy 2.x 不兼容时改用）。
-
-### 已知 `pip check` 结果（本机 venv 实测）
+### 历史：`pip check` 告警（早期全量/混合 venv，非方案 B）
 
 ```text
 opencv-python 5.0.0.93 has requirement numpy>=2; python_version >= "3.9", but you have numpy 1.23.5.
 scikit-image 0.25.2 has requirement numpy>=1.24, but you have numpy 1.23.5.
 ```
 
-**Demo 运行成功 ≠ 环境无冲突。**
+方案 B **不安装** scikit-image，且 OpenCV 4.11.x 与 NumPy 1.23.5 兼容；cleanroom 下 **`pip check` 无 broken requirements**。
 
 ---
 
-## Windows PowerShell：虚拟环境与建议安装顺序
+## Windows PowerShell：虚拟环境与安装顺序
 
 假定当前目录为 **`nwueyes` 仓库根目录**。
 
@@ -149,39 +148,54 @@ python --version
 
 执行策略限制时可用 `external\bytetrack-py310\Scripts\activate.bat`。
 
-### 2. 安装 PyTorch（本机 Demo 已用；官方仅要求 `torch>=1.7`）
+### 2. 安装 PyTorch（CUDA 12.4；官方仅要求 `torch>=1.7`）
+
+仅使用 `--index-url` 指向 PyTorch 索引时，**torchvision 等依赖可能解析失败**；请使用 **`--extra-index-url`**，并保留 PyPI 为默认源：
 
 ```powershell
-pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+pip install torch==2.6.0 torchvision==0.21.0 --extra-index-url https://download.pytorch.org/whl/cu124
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-### 3. 固定 NumPy（本机 workaround）
+### 3. 方案 B — Demo 最小依赖（推荐）
 
 ```powershell
 pip install numpy==1.23.5
-```
-
-### 4. 官方 Step 1～3（子模块根目录）
-
-```powershell
+pip install loguru tabulate thop lap cython scipy ninja cython_bbox pycocotools
+pip install "opencv-python>=4.8,<5"
 Set-Location external\ByteTrack
-pip install -r requirements.txt
-pip install cython
-pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
-pip install cython_bbox
+$env:PYTHONUTF8 = "1"
 python setup.py develop
-pip install numpy==1.23.5
-python -c "import numpy; print(numpy.__version__)"
 Set-Location ..\..
-```
-
-### 5. 自检
-
-```powershell
 pip check
 ```
 
-可能仍有 NumPy 相关告警；**尚未** 在全新空 venv 上完整端到端复验本文顺序。
+**Windows 说明：**
+
+| 问题 | 处理 |
+|------|------|
+| **pycocotools** | 优先 **`pip install pycocotools`**（PyPI 预编译 wheel）。官方 **`git+.../cocoapi`** 在 MSVC 下可能因 `-Wno-cpp` 等标志失败（`cl: error D8021`）。 |
+| **`setup.py develop` 读 README 报错** | 子模块根目录执行前设置 **`$env:PYTHONUTF8 = "1"`**（避免 GBK 解码 `README.md` 失败）。 |
+| **`yolox._C` 编译** | 需本机 **Visual Studio C++** 工具链；`cl.exe` 可能不在 PATH，但 PyTorch 扩展构建仍可能找到已安装的 VS。未装 VS 时 develop 会失败。 |
+| **pip SSL 中断** | 可重试；torchvision 务必用上一节的 **`--extra-index-url`**。 |
+
+### 4. 方案 A — 官方全量（可选）
+
+```powershell
+pip install numpy==1.23.5
+Set-Location external\ByteTrack
+pip install -r requirements.txt
+pip install cython
+pip install pycocotools
+pip install cython_bbox
+$env:PYTHONUTF8 = "1"
+python setup.py develop
+pip install numpy==1.23.5
+Set-Location ..\..
+pip check
+```
+
+（Windows 上 pycocotools 建议用 PyPI wheel，替代 git cocoapi。）
 
 ---
 
@@ -204,20 +218,22 @@ pip check
 
 ```powershell
 Set-Location external\ByteTrack
+$env:PYTHONUTF8 = "1"
 python tools/demo_track.py video -f exps/example/mot/yolox_x_mix_det.py -c pretrained/bytetrack_x_mot17.pth.tar --fp16 --fuse --save_result
 ```
 
-默认输入：`videos/palace.mp4`。输出写入 `YOLOX_outputs/`（勿提交）。
+默认输入：`videos/palace.mp4`。输出写入 `YOLOX_outputs/`（勿提交）。cleanroom 一次运行约 **~17 fps**（RTX 4060，fp16 + fuse）。
 
 ---
 
-## 本机已验证的一次 Demo 输出（摘要）
+## 已验证 Demo 输出（摘要）
 
-| 项 | 值 |
-|----|-----|
-| 输入帧数 | 329 |
-| 轨迹 TXT 行数 | 7,248 |
-| 不同 Track ID 数量 | 53 |
+| 项 | 历史本机样例 | cleanroom（方案 B，2026-10-11） |
+|----|--------------|----------------------------------|
+| 输入 | `videos/palace.mp4` | 同左 |
+| 输入帧数 | 329 | 329（官方样例视频） |
+| 轨迹 TXT | 非空（样例 7,248 行 / 53 Track ID） | 非空（`YOLOX_outputs\...\*.txt`） |
+| 输出视频 | 可解码 mp4 | 可解码 mp4 |
 
 供对照，**非** MOT 评测指标。
 
@@ -226,10 +242,10 @@ python tools/demo_track.py video -f exps/example/mot/yolox_x_mix_det.py -c pretr
 ## 同事复现步骤（概要）
 
 1. `git clone --recurse-submodules` 或 `git submodule update --init --recursive`（见上文）。
-2. 配置 `external\bytetrack-py310` 与 Python 依赖（见上文）。
+2. 配置 `external\bytetrack-py310`，按 **方案 B** 安装依赖（见上文）。
 3. 下载权重至 `external\ByteTrack\pretrained\`。
-4. 运行 Demo 命令。
-5. 对照 **验收清单**。
+4. 运行 Demo 命令（建议 `$env:PYTHONUTF8 = "1"`）。
+5. 执行 `pip check` 与 **验收清单**。
 
 ---
 
@@ -245,9 +261,10 @@ python tools/demo_track.py video -f exps/example/mot/yolox_x_mix_det.py -c pretr
 | A4 | 权重 | `pretrained\bytetrack_x_mot17.pth.tar` 存在 |
 | A5 | 勿误提交 | 不提交 venv、权重、`YOLOX_outputs/` |
 
-### B. 本机已验证（非强制一致）
+### B. 本组织已验证（非强制版本完全一致）
 
-Demo 可跑通；输出视频可解码；轨迹 TXT 非空（样例 7,248 行 / 53 Track ID）。
+- **方案 B** cleanroom：`pip check` 无冲突；Demo 可跑通；输出 mp4 可解码；轨迹 TXT 非空。
+- 历史全量 venv 样例：轨迹 TXT 约 7,248 行 / 53 Track ID（供数量级对照）。
 
 ### C. 不在范围
 
@@ -267,3 +284,4 @@ Demo 可跑通；输出视频可解码；轨迹 TXT 非空（样例 7,248 行 / 
 |------|-----|
 | 路径 | `docs/bytetrack-reproduction/README.md` |
 | 源码 | Git 子模块 `external/ByteTrack` @ `d1bf0191adff59bc8fcfeaa0b33d3d1642552a99` |
+| 最近更新 | 2026-10-11：方案 B 最小依赖、Windows/pycocotools/PyTorch 索引、cleanroom 验收 |
