@@ -15,3 +15,10 @@ redis/
 .env
 yolov8n.pt
 .idea/
+
+# ByteTrack Demo（子模块源码由 gitlink 跟踪；勿提交 venv / 权重 / 输出）
+external/bytetrack-py310/
+external/ByteTrack/pretrained/
+external/ByteTrack/YOLOX_outputs/
+external/ByteTrack/*.pth
+external/ByteTrack/*.pth.tar
