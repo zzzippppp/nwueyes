@@ -1,0 +1,17 @@
+# Strong Baseline + BNNeck — Market1501 inference (verified 2026-10-12)
+#
+# Install PyTorch + torchvision FIRST with the CUDA build that matches your driver, e.g.:
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+#
+# CPU-only (not used for our CUDA acceptance run):
+#   pip install torch==2.6.0 torchvision==0.21.0
+
+yacs==0.1.8
+pytorch-ignite==0.3.0
+numpy==2.2.6
+pillow==12.3.0
+
+# Optional: Google Drive download helpers only (not required for test.py)
+# gdown==6.4.2
+# beautifulsoup4==4.15.0
+# requests==2.34.2

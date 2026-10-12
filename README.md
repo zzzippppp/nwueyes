@@ -269,6 +269,9 @@ A: 出门需 exit 体态向量与 `enter_body_embedding` 相似度 ≥ `bodyMatc
 - 后端详情：[`ruoyi/NWUEYES_README.md`](ruoyi/NWUEYES_README.md)
 - SQL migration：[`ruoyi/sql/migration/README.md`](ruoyi/sql/migration/README.md)
 - 部署笔记：[`deployment-progress.md`](deployment-progress.md)、[`middleware-deployment.md`](middleware-deployment.md)
+- 研究复现（独立环境，非考勤主链路）：
+  - [ByteTrack 官方 Demo](docs/bytetrack-reproduction/README.md)
+  - [Strong Baseline + BNNeck / Market1501 推理](docs/reid-strong-baseline/README.md)
 
 ---
 

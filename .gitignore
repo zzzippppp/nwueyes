@@ -22,3 +22,10 @@ external/ByteTrack/pretrained/
 external/ByteTrack/YOLOX_outputs/
 external/ByteTrack/*.pth
 external/ByteTrack/*.pth.tar
+
+# Re-ID Strong Baseline（独立 clone；勿提交 venv / 数据 / 权重 / 大输出）
+external/reid-strong-baseline-py310/
+external/reid-strong-baseline/data/
+external/reid-strong-baseline/downloads/
+external/reid-strong-baseline/pretrained/
+external/reid-strong-baseline/outputs/
